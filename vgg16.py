@@ -23,11 +23,11 @@ validation_data_dir = 'validation'
 
 ### Parameters
 batch_size = 32
-epochs = 1
-num_classes = 20
-tensorflow = False
-train_size = 600
-test_size = 515
+epochs = 15
+num_classes = 200
+tensorflow = True
+train_size = 5096
+test_size = 1024
 
 
 def fitData(tensorflow, batch_size, epochs, model, generator_train, generator_test, train_size, test_size):
