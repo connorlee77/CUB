@@ -33,8 +33,7 @@ def plot_confusion_matrix(cm):
 
 # path to the model weights file.
 img_width, img_height = 224, 224 
-train_data_dir = 'train'
-validation_data_dir = 'validation'
+validation_data_dir = 'crop_validation'
 
 
 ### Parameters
