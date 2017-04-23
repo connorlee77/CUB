@@ -16,18 +16,19 @@ import matplotlib.pyplot as plt
 
 
 # path to the model weights file.
-img_width, img_height = 150, 150 
+img_width, img_height = 224, 224 
 train_data_dir = 'train'
 validation_data_dir = 'validation'
 
 
 ### Parameters
 batch_size = 32
-epochs = 15
+epochs1 = 50
+epochs2 = 15
 num_classes = 200
 tensorflow = True
 train_size = 5096
-test_size = 1024
+test_size = 512
 
 
 def fitData(tensorflow, batch_size, epochs, model, generator_train, generator_test, train_size, test_size):
@@ -52,7 +53,14 @@ def fitData(tensorflow, batch_size, epochs, model, generator_train, generator_te
 
 
 # Data
-datagen = ImageDataGenerator(rescale=1./255, horizontal_flip=True, rotation_range=10)
+datagen = ImageDataGenerator(rescale=1./255, 
+    horizontal_flip=True, 
+    rotation_range=10,
+    shear_range=0.2,
+    zoom_range=0.2)
+
+testgen = ImageDataGenerator(rescale=1./255)
+
 generator_train = datagen.flow_from_directory(
     train_data_dir,
     target_size=(img_width, img_height),
@@ -60,7 +68,7 @@ generator_train = datagen.flow_from_directory(
     class_mode='categorical',
     shuffle=True)
 
-generator_test = datagen.flow_from_directory(
+generator_test = testgen.flow_from_directory(
         validation_data_dir,
         target_size=(img_width, img_height),
         batch_size=batch_size,
@@ -78,7 +86,7 @@ predictions = Dense(num_classes, activation='softmax')(x)
 
 # Combined model w/ classifier
 model = Model(input=base_model.input, output=predictions)
-
+model.load_weights('total_weights.h5')
 
 # Train top classifer only
 for i, layer in enumerate(base_model.layers):
@@ -87,7 +95,7 @@ for i, layer in enumerate(base_model.layers):
 
 model.summary()
 model.compile(optimizer=RMSprop(), loss='categorical_crossentropy', metrics=['accuracy'])
-history1 = fitData(tensorflow, batch_size, epochs, model, generator_train, generator_test, train_size, test_size)
+history1 = fitData(tensorflow, batch_size, epochs1, model, generator_train, generator_test, train_size, test_size)
 model.save_weights('top_weights.h5')
 
 
@@ -98,32 +106,7 @@ for layer in model.layers[:17]:
 for layer in model.layers[17:]:
     layer.trainable = True
 
-model.compile(optimizer=SGD(lr=0.0001, momentum=0.95), loss='categorical_crossentropy', metrics=['accuracy'])
-history2 = fitData(tensorflow, batch_size, epochs, model, generator_train, generator_test, train_size, test_size)
+model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
+history2 = fitData(tensorflow, batch_size, epochs2, model, generator_train, generator_test, train_size, test_size)
 
 model.save_weights('total_weights.h5')
-
-
-
-# Plotting 
-acc = history1.history['acc'] + history2.history['acc']
-val_acc = history1.history['val_acc'] + history2.history['val_acc']
-
-loss = history1.history['loss'] + history2.history['loss']
-val_loss = history1.history['val_loss'] + history2.history['val_loss']
-
-fig = plt.figure()
-plt.plot(acc, label='Train')
-plt.plot(val_acc, label='Test')
-plt.ylabel('Accuracy')
-plt.xlabel('Epoch')
-plt.legend(loc='lower right', prop={'size':'small'})
-fig.savefig('acc.png')
-
-fig = plt.figure()
-plt.plot(loss, label='Train')
-plt.plot(val_loss, label='Test')
-plt.ylabel('Loss')
-plt.xlabel('Epoch')
-plt.legend(loc='upper right', prop={'size':'small'})
-fig.savefig('loss.png')
