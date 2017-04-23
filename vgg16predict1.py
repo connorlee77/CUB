@@ -28,14 +28,13 @@ def getTestData():
 		label = row['label']
 		
 		Y.append(label)
-		img = ndimage.imread(DIR + 'validation/' +path)
+		img = ndimage.imread(DIR + 'validation/' +path) / 255.0
 		X.append(img)
-
+		print i
 	return X, np.array(Y)
 
 x, y = getTestData()
-print x
-print y
+
 # path to the model weights file.
 img_width, img_height = 224, 224 
 train_data_dir = 'train'
@@ -45,19 +44,6 @@ validation_data_dir = 'validation'
 ### Parameters
 batch_size = 32
 num_classes = 200
-test_size = 512
-
-
-
-
-testgen = ImageDataGenerator(rescale=1./255)
-
-generator_test = testgen.flow_from_directory(
-        validation_data_dir,
-        target_size=(img_width, img_height),
-        batch_size=batch_size,
-        class_mode='categorical',
-        shuffle=False)
 
 base_model = VGG19(weights='imagenet', input_shape=(img_width, img_height, 3), pooling='max', include_top=False)
 
@@ -67,17 +53,12 @@ x = Dense(512, activation='relu')(x)
 x = Dropout(0.5)(x)
 predictions = Dense(num_classes, activation='softmax')(x)
 
-DIR = './'
-test_CSV = pd.read_csv(DIR + 'test.csv')
-true = test_CSV['label'].values[0:32]
-
 # Combined model w/ classifier
 model = Model(input=base_model.input, output=predictions)
 model.summary()
 model.compile(optimizer=RMSprop(), loss='categorical_crossentropy', metrics=['accuracy'])
 model.load_weights('total_weights.h5')
 
-predictions = model.predict_generator(generator_test, 1, verbose=1)
-p = np.array(map(np.argmax, predictions)) + 1 
-
+p = model.predict_classes(x, batch_size=batch_size, verbose=1)
+print p
 
