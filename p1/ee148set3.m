@@ -1,5 +1,5 @@
 acc = csvread('run_.,tag_acc.csv', 1);
-vacc = csvread('run_.,tag_val_acc (1).csv', 1);
+vacc = csvread('run_.,tag_val_acc.csv', 1);
 loss = csvread('run_.,tag_loss.csv', 1);
 vloss = csvread('run_.,tag_val_loss.csv', 1);
 
