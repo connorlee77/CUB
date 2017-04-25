@@ -29,7 +29,7 @@ def plot_confusion_matrix(cm):
 
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-    plt.savefig('confusionmatrix1')
+    plt.savefig('confusionmatrix1.svg')
 
 
 
@@ -43,7 +43,7 @@ validation_data_dir = 'validation'
 batch_size = 32
 num_classes = 200
 total_test = 5794
-steps = int(128/batch_size)
+steps = int(total_test/batch_size)
 
 DIR = './'
 test_CSV = pd.read_csv(DIR + 'test.csv')

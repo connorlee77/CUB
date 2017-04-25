@@ -9,7 +9,7 @@ from keras.models import Sequential, Model
 from keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D, Dense, GlobalAveragePooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 
-from keras.applications.resnet50 import ResNet50
+from keras.applications.resnet50 import ResNet50, preprocess_input
 from keras import backend as K
 from keras.optimizers import SGD, RMSprop
 import matplotlib.pyplot as plt
@@ -23,13 +23,18 @@ validation_data_dir = 'validation'
 
 ### Parameters
 batch_size = 32
-epochs1 = 10
+epochs1 = 15
 epochs2 = 10
 num_classes = 200
 tensorflow = True
 train_size = 5096
 test_size = 2048
 
+
+def preprocess_input_res(x):
+    X = np.expand_dims(x, axis=0)
+    X = preprocess_input(X)
+    return X[0]
 
 def fitData(tensorflow, batch_size, epochs, model, generator_train, generator_test, train_size, test_size):
     history = None
@@ -53,7 +58,7 @@ def fitData(tensorflow, batch_size, epochs, model, generator_train, generator_te
 
 
 # Data
-datagen = ImageDataGenerator(rescale=1./255,
+datagen = ImageDataGenerator(preprocessing_function=preprocess_input_res,
     width_shift_range=0.2,
     height_shift_range=0.2, 
     horizontal_flip=True, 
@@ -61,7 +66,7 @@ datagen = ImageDataGenerator(rescale=1./255,
     shear_range=0.2,
     zoom_range=0.2)
 
-testgen = ImageDataGenerator(rescale=1./255)
+testgen = ImageDataGenerator(preprocessing_function=preprocess_input_res)
 
 generator_train = datagen.flow_from_directory(
     train_data_dir,

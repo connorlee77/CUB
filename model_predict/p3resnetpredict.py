@@ -50,7 +50,7 @@ steps = int(total_test/batch_size)
 DIR = './'
 test_CSV = pd.read_csv(DIR + 'test.csv')
 true_labels = test_CSV['label'].values[0:steps * batch_size]
-print len(true_labels)
+
 testgen = ImageDataGenerator(preprocessing_function=preprocess_input_res)
 
 generator_test = testgen.flow_from_directory(
@@ -65,7 +65,7 @@ base_model = ResNet50(weights='imagenet', input_shape=(img_width, img_height, 3)
 # Top classifier
 x = base_model.output
 x = Dense(1024, activation='relu')(x)
-x = Dropout(0.25)(x)
+x = Dropout(0.5)(x)
 predictions = Dense(num_classes, activation='softmax')(x)
 
 
