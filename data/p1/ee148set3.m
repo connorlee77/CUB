@@ -10,6 +10,7 @@ plot(vacc(:,3));
 xlabel('epoch');
 ylabel('accuracy');
 legend('training','validation', 'location', 'southeast')
+title('Classification Accuracy')
 
 figure
 plot(loss(:,3));
@@ -18,3 +19,4 @@ plot(vloss(:,3));
 xlabel('epoch');
 ylabel('cross entropy loss');
 legend('training','validation', 'location', 'northeast')
+title('Loss')

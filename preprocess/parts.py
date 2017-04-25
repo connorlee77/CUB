@@ -54,9 +54,9 @@ def to_canonical(height=224, width=224):
 	CROP_TEST_DIR = 'crop_validation/'
 
 	df = get_dataset()
-	
 	have = []
 	for name, group in df.groupby('image_id'):
+
 		if name % 100 == 0:
 			print name
 		have.append(name)
@@ -119,8 +119,12 @@ def to_canonical(height=224, width=224):
 	i = 1
 	while i < 11788:
 		if i not in have:
-			path = df[df['image_id'] == 1]['path'].iloc[0]
-			isTrain = df[df['image_id'] == 1]['set'].iloc[0]
+			if len(df[df['image_id'] == i]) == 0:
+				i += 1
+				continue
+
+			path = df[df['image_id'] == i]['path'].iloc[0]
+			isTrain = df[df['image_id'] == i]['set'].iloc[0]
 
 			src = None
 			if isTrain:
@@ -148,8 +152,6 @@ def to_canonical(height=224, width=224):
 			missing.append(i)
 		i += 1
 	
-
-
 
 		
 to_canonical()
