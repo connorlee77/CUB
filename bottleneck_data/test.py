@@ -1,4 +1,5 @@
 import numpy as np 
+from sklearn import linear_model
 
 p1test = np.load('p1_bottleneck_features_test.npy')
 p2test = np.load('p2_bottleneck_features_test.npy')
@@ -27,3 +28,21 @@ p3trl = np.load('p3_train_labels.npy')
 
 assert p1trl.shape == p2trl.shape and p1trl.shape == p3trl.shape
 print p1trl.shape, p2trl.shape, p3trl.shape
+
+train_data = np.hstack([p1train, p2train, p3train])
+test_data = np.hstack([p1test, p2test, p3test])
+
+train_labels = p1trl 
+test_labels = p1tl
+
+print train_data.shape, test_data.shape
+
+assert np.array_equal(p1tl, p2tl) and np.array_equal(p1tl, p3tl) 
+assert np.array_equal(p1trl, p2trl) and np.array_equal(p1trl, p3trl) 
+
+
+
+clf = linear_model.SGDClassifier(verbose=1)
+clf.fit(train_data, train_labels)
+print clf.score(test_data, test_labels)
+
